@@ -17,5 +17,22 @@ def auth_headers():
     }
     return headers
 
+def test_get_weather_data_with_admin_credentials(base_url, auth_headers):
+    response = requests.get(f"{base_url}/api/weather?city=karachi", headers=auth_headers)
+
+    assert response.status_code == 200
+
+def test_add_weather_data_with_admin_credentials(base_url, auth_headers):
+    payload = {
+        "city": "lahore",
+        "date": "2023-04-02",
+        "temperature": "35",
+        "humidity": "60"
+    }
+
+    response = requests.post(f"{base_url}/api/weather", json=payload, headers=auth_headers)
+
+    assert response.status_code == 200
+
 
 
