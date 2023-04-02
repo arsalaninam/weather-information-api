@@ -1,0 +1,8 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="All Test Classes">
+    <test name="Execute All Test Cases">
+        <classes>
+            <class name="org.dcs.testcase.weatherApiEndpoint.WeatherInfoTescase"/>
+        </classes>
+    </test>
+</suite>
