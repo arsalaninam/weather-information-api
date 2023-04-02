@@ -26,9 +26,9 @@ public class WeatherApiBusinessLogic extends PropertyReader {
     private static String baseUrl = prop.getProperty(BASE_URL);
 
     /**
-     * Extract data as list of Weather Api Response object from the POJO
+     * Create a weather Information Request Body and POST it
      * <p>
-     * e.g. https://{baseUrl}/api/weather?date={provided date}
+     * e.g. https://{baseUrl}/api/weather
      */
     public static String postWeatherInformation(JSONObject requestBody, String username, String password) {
         RestAssured.defaultParser = Parser.JSON;
@@ -88,6 +88,45 @@ public class WeatherApiBusinessLogic extends PropertyReader {
                 .get(url);
         Assert.assertEquals(response.getStatusCode(), 401, "Response status code is not 401");
         return getUnauthorizedErrorResponse(response);
+    }
+
+    /**
+     * Extract rest assured response
+     * <p>
+     * e.g. https://{baseUrl}/api/weather?city={provided city}
+     */
+    public static Response apiResponse(String city, String username, String password) {
+        RestAssured.defaultParser = Parser.JSON;
+        String getWeatherEndpointByCity = prop.getProperty(WEATHER_GET_URL_BY_CITY_ENDPOINT);
+        String url = baseUrl + getWeatherEndpointByCity + city;
+        log.info("URL to be hit : " + url);
+        return RestAssured.given().auth().basic(username, password).when().get(url);
+    }
+
+    /**
+     * Sending a GET request without query parameter
+     * <p>
+     * e.g. https://{baseUrl}/api/weather
+     */
+    public static Response getResponseWithoutQueryParameter(String username, String password) {
+        RestAssured.defaultParser = Parser.JSON;
+        String postWeatherInfoEndpoint = prop.getProperty(WEATHER_POST_URL);
+        String url = baseUrl + postWeatherInfoEndpoint;
+        log.info("URL to be hit : " + url);
+        return RestAssured.given().auth().basic(username, password).when().get(url);
+    }
+
+    /**
+     * Sending a GET request to error endpoint
+     * <p>
+     * e.g. https://{baseUrl}/api/weather/error
+     */
+    public static Response errorEndpoint(String username, String password) {
+        RestAssured.defaultParser = Parser.JSON;
+        String getErrorEndpoint = prop.getProperty(WEATHER_ERROR_URL);
+        String url = baseUrl + getErrorEndpoint;
+        log.info("URL to be hit : " + url);
+        return RestAssured.given().auth().basic(username, password).when().get(url);
     }
 
     /**
