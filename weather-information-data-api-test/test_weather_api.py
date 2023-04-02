@@ -34,5 +34,10 @@ def test_add_weather_data_with_admin_credentials(base_url, auth_headers):
 
     assert response.status_code == 200
 
+def test_get_error_status_code(base_url, auth_headers):
+    response = requests.get(f"{base_url}/api/weather/error", headers=auth_headers)
+
+    assert response.status_code == 500
+
 
 
