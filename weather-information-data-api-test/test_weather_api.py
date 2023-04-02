@@ -68,5 +68,17 @@ def test_add_weather_data_content(base_url, auth_headers):
     assert response.status_code == 200
 
 
+def test_add_weather_data_with_invalid_credentials(base_url):
+    payload = {
+        "city": "lahore",
+        "date": "2023-04-02",
+        "temperature": "35",
+        "humidity": "60"
+    }
+
+    auth_headers = {"Authorization": "Bearer invalid_token"}
+    response = requests.post(f"{base_url}/api/weather", json=payload, headers=auth_headers)
+
+    assert response.status_code == 401
 
 
