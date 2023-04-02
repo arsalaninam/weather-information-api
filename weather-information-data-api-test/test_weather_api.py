@@ -1,6 +1,7 @@
 import base64
 import jsonschema
 import pytest
+import requests
 
 
 @pytest.fixture
@@ -80,8 +81,6 @@ def test_add_weather_data_with_invalid_credentials(base_url):
 
     assert response.status_code == 401
 
-import requests
-
 def test_response_timeout(base_url):
     payload = {
         "city": "lahore",
@@ -136,4 +135,24 @@ def test_forced_errors(base_url):
 
     assert response.status_code == 401
 
+@pytest.mark.xfail
+def test_forced_errors(base_url):
+    payload = {
+        "city": "lahore",
+        "date": "2023-04-02",
+        "temperature": "35",
+        "humidity": "60"
+    }
 
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer token"
+    }
+
+    params = {
+        "error": "true"
+    }
+
+    response = requests.post(f"{base_url}/api/weather", json=payload, headers=headers, params=params)
+
+    assert response.status_code == 401
