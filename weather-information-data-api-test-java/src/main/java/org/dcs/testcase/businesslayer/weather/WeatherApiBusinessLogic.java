@@ -1,10 +1,13 @@
 package org.dcs.testcase.businesslayer.weather;
 
 import io.restassured.RestAssured;
+import io.restassured.config.HttpClientConfig;
 import io.restassured.http.ContentType;
 import io.restassured.parsing.Parser;
 import io.restassured.response.Response;
+import org.apache.http.params.CoreConnectionPNames;
 import org.dcs.testcase.pogo.weather.ListWeatherResponse;
+import org.dcs.testcase.pogo.weather.UnauthorizedErrorResponse;
 import org.dcs.testcase.pogo.weather.WeatherApiResponse;
 import org.dcs.testcase.util.PropertyReader;
 import org.json.JSONObject;
@@ -52,7 +55,7 @@ public class WeatherApiBusinessLogic extends PropertyReader {
         Response response = RestAssured.given().auth().basic(username, password).when()
                 .get(url);
         Assert.assertEquals(response.getStatusCode(), 200, "Response status code is not 200");
-        return allWeatherResponse(response);
+        return getWeatherResponseList(response);
     }
 
     /**
@@ -68,13 +71,54 @@ public class WeatherApiBusinessLogic extends PropertyReader {
         Response response = RestAssured.given().auth().basic(username, password).when()
                 .get(url);
         Assert.assertEquals(response.getStatusCode(), 200, "Response status code is not 200");
-        return allWeatherResponse(response);
+        return getWeatherResponseList(response);
     }
 
-    private static ListWeatherResponse allWeatherResponse(Response response) {
+    /**
+     * Extract data as Unauthorized POJO from response
+     * <p>
+     * e.g. https://{baseUrl}/api/weather?city={provided city}
+     */
+    public static UnauthorizedErrorResponse errorResponse(String city) {
+        RestAssured.defaultParser = Parser.JSON;
+        String getWeatherEndpointByCity = prop.getProperty(WEATHER_GET_URL_BY_CITY_ENDPOINT);
+        String url = baseUrl + getWeatherEndpointByCity + city;
+        log.info("URL to be hit : " + url);
+        Response response = RestAssured.given().when()
+                .get(url);
+        Assert.assertEquals(response.getStatusCode(), 401, "Response status code is not 401");
+        return getUnauthorizedErrorResponse(response);
+    }
+
+    /**
+     * Extract data as list of Weather Api Response object from the POJO
+     * and set a particular timeout of 5000 milliseconds
+     * <p>
+     * e.g. https://{baseUrl}/api/weather?city={provided city}
+     */
+    public static ListWeatherResponse setTimeoutOfWeatherResponseByCity(String city, String username, String password) {
+        RestAssured.defaultParser = Parser.JSON;
+        String getWeatherEndpointByCity = prop.getProperty(WEATHER_GET_URL_BY_CITY_ENDPOINT);
+        String url = baseUrl + getWeatherEndpointByCity + city;
+        log.info("URL to be hit : " + url);
+        Response response = RestAssured.given().config(RestAssured.config().httpClient(HttpClientConfig.httpClientConfig()
+                        .setParam(CoreConnectionPNames.CONNECTION_TIMEOUT, 5000)
+                        .setParam(CoreConnectionPNames.SO_TIMEOUT, 5000)))
+                .auth().basic(username, password).when()
+                .get(url);
+        Assert.assertEquals(response.getStatusCode(), 200, "Response status code is not 200");
+        return getWeatherResponseList(response);
+    }
+
+    private static ListWeatherResponse getWeatherResponseList(Response response) {
         List<WeatherApiResponse> weatherApiResponse = Arrays.asList(response.getBody().as(WeatherApiResponse[].class));
         ListWeatherResponse listWeatherResponse = new ListWeatherResponse();
         listWeatherResponse.setWeatherApiResponseList(weatherApiResponse);
         return listWeatherResponse;
+    }
+
+    private static UnauthorizedErrorResponse getUnauthorizedErrorResponse(Response response) {
+        UnauthorizedErrorResponse unauthorizedErrorResponse = response.getBody().as(UnauthorizedErrorResponse.class);
+        return unauthorizedErrorResponse;
     }
 }
