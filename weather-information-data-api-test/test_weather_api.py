@@ -39,5 +39,34 @@ def test_get_error_status_code(base_url, auth_headers):
 
     assert response.status_code == 500
 
+def test_add_weather_data_content(base_url, auth_headers):
+    schema = {
+        "type": "object",
+        "properties": {
+            "city": {"type": "string"},
+            "date": {"type": "string", "format": "date"},
+            "temperature": {"type": "string", "pattern": "^\\d+$"},
+            "humidity": {"type": "string", "pattern": "^\\d+$"}
+        },
+        "required": ["city", "date", "temperature", "humidity"]
+    }
+
+    payload = {
+        "city": "lahore",
+        "date": "2023-04-02",
+        "temperature": "35",
+        "humidity": "60"
+    }
+
+    try:
+        jsonschema.validate(payload, schema)
+    except jsonschema.exceptions.ValidationError as e:
+        pytest.fail(f"Schema validation failed: {e}")
+
+    response = requests.post(f"{base_url}/api/weather", json=payload, headers=auth_headers)
+
+    assert response.status_code == 200
+
+
 
 
