@@ -1,0 +1,80 @@
+package org.dcs.testcase.businesslayer.weather;
+
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import io.restassured.parsing.Parser;
+import io.restassured.response.Response;
+import org.dcs.testcase.pogo.weather.ListWeatherResponse;
+import org.dcs.testcase.pogo.weather.WeatherApiResponse;
+import org.dcs.testcase.util.PropertyReader;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.testng.Assert;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static org.dcs.testcase.constant.ServiceConstant.*;
+
+public class WeatherApiBusinessLogic extends PropertyReader {
+
+    private static final Logger log = LoggerFactory.getLogger(WeatherApiBusinessLogic.class);
+    private static String baseUrl = prop.getProperty(BASE_URL);
+
+    /**
+     * Extract data as list of Weather Api Response object from the POJO
+     * <p>
+     * e.g. https://{baseUrl}/api/weather?date={provided date}
+     */
+    public static String postWeatherInformation(JSONObject requestBody, String username, String password) {
+        RestAssured.defaultParser = Parser.JSON;
+        String postWeatherInfoEndpoint = prop.getProperty(WEATHER_POST_URL);
+        String url = baseUrl + postWeatherInfoEndpoint;
+        log.info("URL to be hit : " + url);
+        Response response = RestAssured.given().auth().basic(username, password)
+                .contentType(ContentType.JSON).body(requestBody.toString())
+                .when().post(url);
+        Assert.assertEquals(response.getStatusCode(), 200, "Response status code is not 200");
+        return response.getBody().asString();
+    }
+
+    /**
+     * Extract data as list of Weather Api Response object from the POJO
+     * <p>
+     * e.g. https://{baseUrl}/api/weather?date={provided date}
+     */
+    public static ListWeatherResponse getWeatherResponseByDate(String date, String username, String password) {
+        RestAssured.defaultParser = Parser.JSON;
+        String getWeatherEndpointByDate = prop.getProperty(WEATHER_GET_URL_BY_DATE_ENDPOINT);
+        String url = baseUrl + getWeatherEndpointByDate + date;
+        log.info("URL to be hit : " + url);
+        Response response = RestAssured.given().auth().basic(username, password).when()
+                .get(url);
+        Assert.assertEquals(response.getStatusCode(), 200, "Response status code is not 200");
+        return allWeatherResponse(response);
+    }
+
+    /**
+     * Extract data as list of Weather Api Response object from the POJO
+     * <p>
+     * e.g. https://{baseUrl}/api/weather?city={provided city}
+     */
+    public static ListWeatherResponse getWeatherResponseByCity(String city, String username, String password) {
+        RestAssured.defaultParser = Parser.JSON;
+        String getWeatherEndpointByCity = prop.getProperty(WEATHER_GET_URL_BY_CITY_ENDPOINT);
+        String url = baseUrl + getWeatherEndpointByCity + city;
+        log.info("URL to be hit : " + url);
+        Response response = RestAssured.given().auth().basic(username, password).when()
+                .get(url);
+        Assert.assertEquals(response.getStatusCode(), 200, "Response status code is not 200");
+        return allWeatherResponse(response);
+    }
+
+    private static ListWeatherResponse allWeatherResponse(Response response) {
+        List<WeatherApiResponse> weatherApiResponse = Arrays.asList(response.getBody().as(WeatherApiResponse[].class));
+        ListWeatherResponse listWeatherResponse = new ListWeatherResponse();
+        listWeatherResponse.setWeatherApiResponseList(weatherApiResponse);
+        return listWeatherResponse;
+    }
+}
