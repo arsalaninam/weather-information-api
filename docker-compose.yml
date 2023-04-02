@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  weather:
+    image: weather
+    ports:
+      - "8080:8080"
+      - "6379:6379"
+    networks:
+      - my-network
+  pytest:
+    image: pytest
+    networks:
+      - my-network
+    depends_on:
+      - weather
+
+networks:
+  my-network:
