@@ -81,4 +81,17 @@ def test_add_weather_data_with_invalid_credentials(base_url):
 
     assert response.status_code == 401
 
+def test_response_timeout(base_url):
+    payload = {
+        "city": "lahore",
+        "date": "2023-04-02",
+        "temperature": "35",
+        "humidity": "60"
+    }
+
+    timeout = 0.000000001
+
+    with pytest.raises(requests.exceptions.Timeout):
+        requests.post(f"{base_url}/api/weather", json=payload, timeout=timeout)
+
 
