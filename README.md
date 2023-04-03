@@ -83,3 +83,32 @@ https://www.jetbrains.com/idea/download/
 
 >docker-compose: This is the docker-compose yaml configuration which helps us to build all the docker images and helps us to execute all the containers with single command and the api and tests will also execute automatically
 
+
+## How to execute application
+
+In order to run the application, go to root folder of the directory. Open a terminal from there and execute following commands,
+
+```bash
+docker compose build
+```
+
+Once the images are successfully built. Then execute,
+
+```bash
+docker compose up
+```
+
+It will automatically start the weather api on port 8080. It will create a default network and all the containers will be executed within same docker network to communicate with each other. Once the weather api Spring Boot application is up and ready to listen on port 8080. It will automatiaclly execute the java and python backend test frameworks and execute the test cases.
+
+
+## How to Stop the application
+
+In order to stop the application, you need to terminate the application by pressing CTRL + C command. Once the application is terminated, you can execute the following command to clean up the containers created by docker-compose file,
+
+```bash
+docker compose down
+```
+
+## How to edit the code or Re build the application
+
+If anyone wants to extend or edit the code, after all the changes please make sure to repeat those steps mentioned above from "How to execute application".
