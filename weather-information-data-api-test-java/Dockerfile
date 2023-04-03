@@ -13,7 +13,7 @@ COPY testng.xml .
 RUN apt-get update && apt-get install -y maven
 
 # Build the application
-RUN mvn clean package
+RUN mvn install -DskipTests
 
 # Copy the built JAR file and results to the working directory
 COPY target/ .
