@@ -1,0 +1,121 @@
+---
+test_name: test_post_weather_data_with_admin_credentials
+stages:
+  - name: "Test POST weather data with admin credentials"
+    request:
+      url: "http://weather-info:8080/api/weather"
+      method: "POST"
+      json:
+        city: "lahore"
+        date: "2023-04-02"
+        temperature: "35"
+        humidity: "60"
+      headers:
+        Authorization: "Basic YWRtaW46YWRtaW4="
+    response:
+      status_code: 200
+---
+
+---
+test_name: test_get_weather_data_with_admin_credentials
+stages:
+  - name: "Test GET weather data with admin credentials"
+    request:
+      url: "http://weather-info:8080/api/weather"
+      method: "GET"
+      params:
+        city: lahore
+      headers:
+        Authorization: "Basic YWRtaW46YWRtaW4="
+    response:
+      status_code: 200
+---
+
+---
+test_name: get_error_status_code
+stages:
+  - name: "Get error status code"
+    request:
+      url: "http://weather-info:8080/api/weather/error"
+      method: "GET"
+      headers:
+        Authorization: "Basic YWRtaW46YWRtaW4="
+    response:
+      status_code: 500
+---
+
+---
+test_name: add_weather_data
+stages:
+  - name: Add Weather Data
+    request:
+      url: "http://weather-info:8080/api/weather"
+      method: POST
+      headers:
+        Authorization: "Basic YWRtaW46YWRtaW4="
+      json:
+        city: "lahore"
+        date: "2023-04-02"
+        temperature: "35"
+        humidity: "60"
+    response:
+      status_code: 200
+---
+
+---
+test_name: add_weather_data_with_invalid_credentials
+stages:
+  - name: Add weather data with invalid credentials
+    request:
+      url: "http://weather-info:8080/api/weather"
+      method: POST
+      json:
+        city: "lahore"
+        date: "2023-04-02"
+        temperature: "35"
+        humidity: "60"
+      headers:
+        Authorization: "Bearer invalid_token"
+    response:
+      status_code: 401
+---
+
+---
+test_name: headers_validation_test
+stages:
+  - name: Headers validation test
+    request:
+      url: "http://weather-info:8080/api/weather"
+      method: POST
+      headers:
+        Authorization: "Bearer token"
+        Content-Type: "application/json"
+      json:
+        city: "lahore"
+        date: "2023-04-02"
+        temperature: "35"
+        humidity: "60"
+    response:
+      status_code: 401
+---
+
+---
+test_name: test_forced_errors
+stages:
+  - name: Test forced errors
+    request:
+      url: "http://weather-info:8080/api/weather"
+      method: POST
+      params:
+        error: "true"
+      headers:
+        Authorization: "Bearer token"
+        Content-Type: "application/json"
+      json:
+        city: "lahore"
+        date: "2023-04-02"
+        temperature: "35"
+        humidity: "60"
+    response:
+        status_code: 401
+---
