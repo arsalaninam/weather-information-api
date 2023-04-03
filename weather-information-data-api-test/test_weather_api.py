@@ -6,7 +6,7 @@ import requests
 
 @pytest.fixture
 def base_url():
-    return "http://localhost:8080"
+    return "http://weather-info:8080"
 
 @pytest.fixture
 def auth_headers():
