@@ -2,22 +2,20 @@ version: '3'
 
 services:
 
-  weather:
+  weather-info:
     build: ./weather-information-api
     ports:
       - "8080:8080"
       - "6379:6379"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
 
-  javatest:
+  java-test:
     build: ./weather-information-data-api-test-java
-    container_name: javatest
+    container_name: java-test
     depends_on:
-      weather:
-        condition: service_healthy
-    links: 
-        - weather
+      - weather-info
+
+  pytest:
+    build: ./weather-information-data-api-test
+    container_name: pytest
+    depends_on:
+      - weather-info
