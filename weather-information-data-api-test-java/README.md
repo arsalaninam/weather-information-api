@@ -37,7 +37,7 @@ https://www.jetbrains.com/idea/download
 
 >config: This package contains configurations, service endpoints and baseUrl
 
->testcase: This directory contains test cases for each coop api endpoint
+>testcase: This directory contains test cases for each weather api endpoint
 
 >Dockerfile: It contains the docker configuration to build a docker image of java-test which can be also used in docker-compose
 
