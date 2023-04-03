@@ -1,7 +1,6 @@
 package org.dcs.testcase.weatherApiEndpoint;
 
 import io.restassured.response.Response;
-import org.dcs.testcase.TestBase;
 import org.dcs.testcase.businesslayer.weather.WeatherApiBusinessLogic;
 import org.dcs.testcase.data.weather.GetWeatherInfoByCityDataProvider;
 import org.dcs.testcase.data.weather.GetWeatherInfoByDateDataProvider;
@@ -9,11 +8,14 @@ import org.dcs.testcase.data.weather.PostWeatherInfoDataProvider;
 import org.dcs.testcase.pogo.weather.ListWeatherResponse;
 import org.dcs.testcase.pogo.weather.UnauthorizedErrorResponse;
 import org.dcs.testcase.pogo.weather.WeatherApiResponse;
+import org.dcs.testcase.util.ObjectFactory;
+import org.dcs.testcase.util.PropertyReader;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import org.testng.asserts.SoftAssert;
 
 import java.util.List;
 
@@ -23,13 +25,14 @@ import static org.dcs.testcase.constant.ServiceConstant.*;
 import static org.hamcrest.Matchers.equalTo;
 import static org.testng.AssertJUnit.assertEquals;
 
-public class WeatherInfoTescase extends TestBase {
+public class WeatherInfoTescase extends PropertyReader {
     private final String baseUrl = prop.getProperty(BASE_URL);
     private final String username = prop.getProperty(USERNAME);
     private final String password = prop.getProperty(PASSWORD);
     private final String getGetWeatherByDateEndpoint = prop.getProperty(WEATHER_GET_URL_BY_DATE_ENDPOINT);
     private final String getWeatherByDateUrl = baseUrl + getGetWeatherByDateEndpoint;
     private static final Logger log = LoggerFactory.getLogger(WeatherInfoTescase.class);
+    protected SoftAssert softAssert = ObjectFactory.getSoftAssert();
 
     /*****************************************************************************
      * Send a Post request to /api/weather and Validate that response
